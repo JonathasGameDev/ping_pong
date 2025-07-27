@@ -1,19 +1,20 @@
-// Cooldown para navegação
+#region COOLDOWN DE NAVEGAÇÃO
 if (cooldown_navegacao > 0) {
     cooldown_navegacao -= 1;
     pode_navegar = false;
 } else {
     pode_navegar = true;
 }
+#endregion
 
-// ===== CONTROLE DO MOUSE =====
+#region CONTROLE DE MOUSE
 var mouse_x_gui = device_mouse_x_to_gui(0);
 var mouse_y_gui = device_mouse_y_to_gui(0);
 var mouse_clicou = mouse_check_button_pressed(mb_left);
+#endregion
 
-// ===== MENU PRINCIPAL =====
+#region MENU PRINCIPAL
 if (estado_menu == "principal") {
-    // ✨ DETECÇÃO DO MOUSE NAS OPÇÕES
     var mouse_sobre_opcao = -1;
     var centro_y = display_get_gui_height() / 2;
     var centro_x = display_get_gui_width() / 2;
@@ -21,7 +22,6 @@ if (estado_menu == "principal") {
     for (var i = 0; i < total_opcoes_principal; i++) {
         var pos_y = centro_y + (i * 50);
         
-        // Área clicável da opção
         if (mouse_x_gui >= centro_x - 120 && 
             mouse_x_gui <= centro_x + 120 &&
             mouse_y_gui >= pos_y - 25 && 
@@ -29,21 +29,18 @@ if (estado_menu == "principal") {
             
             mouse_sobre_opcao = i;
             
-            // ✨ MOUSE MUDA A SELEÇÃO
             if (opcao_selecionada != i) {
                 opcao_selecionada = i;
-                window_set_cursor(cr_handpoint); // Cursor de mão
+                window_set_cursor(cr_handpoint);
             }
         }
     }
     
-    // Reset cursor se não está sobre nenhuma opção
     if (mouse_sobre_opcao == -1) {
         window_set_cursor(cr_default);
     }
     
     if (pode_navegar) {
-        // Navegação para 4 opções
         if (keyboard_check_pressed(ord("W"))) {
             opcao_selecionada = (opcao_selecionada - 1 + total_opcoes_principal) % total_opcoes_principal;
             cooldown_navegacao = 10;
@@ -54,54 +51,53 @@ if (estado_menu == "principal") {
             cooldown_navegacao = 10;
         }
         
-        // ✨ CONFIRMAR COM ENTER, SPACE OU CLIQUE
         if (keyboard_check_pressed(vk_enter) || keyboard_check_pressed(vk_space) || mouse_clicou) {
             switch(opcao_selecionada) {
-                case 0: // VS PLAYER 2
+                case 0:
                     global.modo_jogo = "player";
-                    room_goto(rm_game);
+                    estado_menu = "configuracao_partida";
+                    opcao_config = 0;
+                    cooldown_navegacao = 10;
                     break;
                     
-                case 1: // VS IA
+                case 1:
                     estado_menu = "dificuldade";
                     opcao_selecionada = 0;
                     cooldown_navegacao = 10;
                     break;
                     
-                case 2: // CONTROLES
+                case 2:
                     estado_menu = "controles";
                     opcao_selecionada = 0;
                     cooldown_navegacao = 10;
                     break;
                     
-                case 3: // SAIR
+                case 3:
                     game_end();
                     break;
             }
         }
     }
 }
+#endregion
 
-// ===== MENU DE DIFICULDADE =====
+#region MENU DE DIFICULDADE
 else if (estado_menu == "dificuldade") {
-    // ✨ DETECÇÃO DO MOUSE NAS DIFICULDADES
     var mouse_sobre_opcao = -1;
     var centro_y = display_get_gui_height() / 2;
     var centro_x = display_get_gui_width() / 2;
     
     for (var i = 0; i < 4; i++) {
         var pos_y = centro_y - 40 + (i * 50);
-        var largura = (i == 3) ? 160 : 120; // Impossível é maior
+        var largura = (i == 3) ? 160 : 120;
         
-        // Área clicável da dificuldade
         if (mouse_x_gui >= centro_x - largura && 
             mouse_x_gui <= centro_x + largura &&
             mouse_y_gui >= pos_y - 30 && 
-            mouse_y_gui <= pos_y + 35) { // +35 para incluir descrição
+            mouse_y_gui <= pos_y + 35) {
             
             mouse_sobre_opcao = i;
             
-            // ✨ MOUSE MUDA A SELEÇÃO
             if (opcao_dificuldade != i + 1) {
                 opcao_dificuldade = i + 1;
                 window_set_cursor(cr_handpoint);
@@ -109,13 +105,11 @@ else if (estado_menu == "dificuldade") {
         }
     }
     
-    // Reset cursor se não está sobre nenhuma opção
     if (mouse_sobre_opcao == -1) {
         window_set_cursor(cr_default);
     }
     
     if (pode_navegar) {
-        // Navegação da dificuldade (4 opções: Fácil, Médio, Difícil, Impossível)
         if (keyboard_check_pressed(ord("W"))) {
             opcao_dificuldade -= 1;
             if (opcao_dificuldade < 1) opcao_dificuldade = 4;
@@ -128,23 +122,24 @@ else if (estado_menu == "dificuldade") {
             cooldown_navegacao = 10;
         }
         
-        // ✨ CONFIRMAR COM ENTER, SPACE OU CLIQUE
         if (keyboard_check_pressed(vk_enter) || keyboard_check_pressed(vk_space) || mouse_clicou) {
             global.modo_jogo = "ia";
             global.dificuldade_escolhida = opcao_dificuldade;
-            room_goto(rm_game);
+            estado_menu = "configuracao_partida";
+            opcao_config = 0;
+            cooldown_navegacao = 10;
         }
         
-        // ✨ VOLTAR COM ESC OU BOTÃO DIREITO
         if (keyboard_check_pressed(vk_escape) || mouse_check_button_pressed(mb_right)) {
             estado_menu = "principal";
-            opcao_selecionada = 1; // Volta para "VS COMPUTADOR"
+            opcao_selecionada = 1;
             cooldown_navegacao = 10;
         }
     }
 }
+#endregion
 
-// ===== MENU DE CONTROLES =====
+#region MENU DE CONTROLES
 else if (estado_menu == "controles") {
     if (!configurando_tecla) {
         var opcoes_controles = [
@@ -153,9 +148,8 @@ else if (estado_menu == "controles") {
             "Pausa", "RESTAURAR PADRÃO", "VOLTAR"
         ];
         var total_controles = array_length(opcoes_controles);
-        var indices_selecionaveis = [0, 1, 2, 3, 5, 6, 7, 8, 10, 12, 14]; // Pula linhas vazias
+        var indices_selecionaveis = [0, 1, 2, 3, 5, 6, 7, 8, 10, 12, 14];
         
-        // ✨ DETECÇÃO DO MOUSE NOS CONTROLES
         var mouse_sobre_opcao = -1;
         var centro_y = display_get_gui_height() / 2;
         var centro_x = display_get_gui_width() / 2;
@@ -164,7 +158,6 @@ else if (estado_menu == "controles") {
             var indice_real = indices_selecionaveis[i];
             var pos_y_ctrl = centro_y - 130 + (indice_real * 18);
             
-            // Área clicável da opção
             if (mouse_x_gui >= centro_x - 180 && 
                 mouse_x_gui <= centro_x + 180 &&
                 mouse_y_gui >= pos_y_ctrl - 12 && 
@@ -172,7 +165,6 @@ else if (estado_menu == "controles") {
                 
                 mouse_sobre_opcao = i;
                 
-                // ✨ MOUSE MUDA A SELEÇÃO
                 if (opcao_selecionada != i) {
                     opcao_selecionada = i;
                     window_set_cursor(cr_handpoint);
@@ -180,7 +172,6 @@ else if (estado_menu == "controles") {
             }
         }
         
-        // Reset cursor se não está sobre nenhuma opção
         if (mouse_sobre_opcao == -1) {
             window_set_cursor(cr_default);
         }
@@ -196,7 +187,6 @@ else if (estado_menu == "controles") {
                 cooldown_navegacao = 10;
             }
             
-            // ✨ CONFIRMAR COM ENTER, SPACE OU CLIQUE
             if (keyboard_check_pressed(vk_enter) || keyboard_check_pressed(vk_space) || mouse_clicou) {
                 switch(opcao_selecionada) {
                     case 0: tecla_sendo_configurada = "p1_cima"; configurando_tecla = true; break;
@@ -208,7 +198,7 @@ else if (estado_menu == "controles") {
                     case 6: tecla_sendo_configurada = "p2_esquerda"; configurando_tecla = true; break;
                     case 7: tecla_sendo_configurada = "p2_direita"; configurando_tecla = true; break;
                     case 8: tecla_sendo_configurada = "pausa"; configurando_tecla = true; break;
-                    case 9: // RESTAURAR PADRÃO
+                    case 9:
                         global.controle_p1_cima = ord("W");
                         global.controle_p1_baixo = ord("S");
                         global.controle_p1_esquerda = ord("A");
@@ -220,27 +210,23 @@ else if (estado_menu == "controles") {
                         global.controle_pausa = vk_escape;
                         cooldown_navegacao = 10;
                         break;
-                    case 10: // VOLTAR
+                    case 10:
                         estado_menu = "principal";
-                        opcao_selecionada = 2; // Volta para "CONTROLES"
+                        opcao_selecionada = 2;
                         cooldown_navegacao = 10;
                         break;
                 }
             }
             
-            // ✨ ESC OU BOTÃO DIREITO PARA VOLTAR
             if (keyboard_check_pressed(vk_escape) || mouse_check_button_pressed(mb_right)) {
                 estado_menu = "principal";
-                opcao_selecionada = 2; // Volta para "CONTROLES"
+                opcao_selecionada = 2;
                 cooldown_navegacao = 10;
             }
         }
-    }
-    else {
-        // CONFIGURANDO UMA TECLA
-        for (var i = 8; i < 256; i++) { // Começa do 8 para evitar teclas especiais
+    } else {
+        for (var i = 8; i < 256; i++) {
             if (keyboard_check_pressed(i)) {
-                // Salva a nova tecla
                 switch(tecla_sendo_configurada) {
                     case "p1_cima": global.controle_p1_cima = i; break;
                     case "p1_baixo": global.controle_p1_baixo = i; break;
@@ -260,7 +246,6 @@ else if (estado_menu == "controles") {
             }
         }
         
-        // ✨ ESC OU BOTÃO DIREITO PARA CANCELAR
         if (keyboard_check_pressed(vk_escape) || mouse_check_button_pressed(mb_right)) {
             configurando_tecla = false;
             tecla_sendo_configurada = "";
@@ -268,3 +253,109 @@ else if (estado_menu == "controles") {
         }
     }
 }
+#endregion
+
+#region MENU DE CONFIGURAÇÃO DE PARTIDA
+else if (estado_menu == "configuracao_partida") {
+    var mouse_sobre_opcao = -1;
+    var centro_y = display_get_gui_height() / 2;
+    var centro_x = display_get_gui_width() / 2;
+    
+    for (var i = 0; i < 3; i++) {
+        var pos_y_config = centro_y - 20 + (i * 35);
+        var largura = (i == 2) ? 180 : 160;
+        
+        if (mouse_x_gui >= centro_x - largura && 
+            mouse_x_gui <= centro_x + largura &&
+            mouse_y_gui >= pos_y_config - 15 && 
+            mouse_y_gui <= pos_y_config + 15) {
+            
+            mouse_sobre_opcao = i;
+            
+            if (opcao_config != i) {
+                opcao_config = i;
+                window_set_cursor(cr_handpoint);
+            }
+        }
+    }
+    
+    if (mouse_sobre_opcao == -1) {
+        window_set_cursor(cr_default);
+    }
+    
+    if (pode_navegar) {
+        if (keyboard_check_pressed(ord("W"))) {
+            opcao_config = (opcao_config - 1 + 3) % 3;
+            cooldown_navegacao = 10;
+        }
+        
+        if (keyboard_check_pressed(ord("S"))) {
+            opcao_config = (opcao_config + 1) % 3;
+            cooldown_navegacao = 10;
+        }
+        
+        if (opcao_config == 0) {
+            if (keyboard_check_pressed(ord("A"))) {
+                rodadas_para_vencer = max(min_rodadas, rodadas_para_vencer - 1);
+                cooldown_navegacao = 8;
+            }
+            if (keyboard_check_pressed(ord("D"))) {
+                rodadas_para_vencer = min(max_rodadas, rodadas_para_vencer + 1);
+                cooldown_navegacao = 8;
+            }
+            
+            if (mouse_check_button_pressed(mb_left)) {
+                rodadas_para_vencer = min(max_rodadas, rodadas_para_vencer + 1);
+                if (rodadas_para_vencer > max_rodadas) rodadas_para_vencer = min_rodadas;
+                cooldown_navegacao = 8;
+            }
+            if (mouse_check_button_pressed(mb_right)) {
+                rodadas_para_vencer = max(min_rodadas, rodadas_para_vencer - 1);
+                if (rodadas_para_vencer < min_rodadas) rodadas_para_vencer = max_rodadas;
+                cooldown_navegacao = 8;
+            }
+        }
+        else if (opcao_config == 1) {
+            if (keyboard_check_pressed(ord("A"))) {
+                pontos_por_rodada = max(min_pontos, pontos_por_rodada - 1);
+                cooldown_navegacao = 8;
+            }
+            if (keyboard_check_pressed(ord("D"))) {
+                pontos_por_rodada = min(max_pontos, pontos_por_rodada + 1);
+                cooldown_navegacao = 8;
+            }
+            
+            if (mouse_check_button_pressed(mb_left)) {
+                pontos_por_rodada = min(max_pontos, pontos_por_rodada + 1);
+                if (pontos_por_rodada > max_pontos) pontos_por_rodada = min_pontos;
+                cooldown_navegacao = 8;
+            }
+            if (mouse_check_button_pressed(mb_right)) {
+                pontos_por_rodada = max(min_pontos, pontos_por_rodada - 1);
+                if (pontos_por_rodada < min_pontos) pontos_por_rodada = max_pontos;
+                cooldown_navegacao = 8;
+            }
+        }
+        
+        if (keyboard_check_pressed(vk_enter) || keyboard_check_pressed(vk_space) || 
+           (mouse_clicou && opcao_config == 2)) {
+            if (opcao_config == 2) {
+                global.rodadas_para_vencer = rodadas_para_vencer;
+                global.pontos_por_rodada = pontos_por_rodada;
+                
+                room_goto(rm_game);
+            }
+        }
+        
+        if (keyboard_check_pressed(vk_escape) || mouse_check_button_pressed(mb_right)) {
+            if (global.modo_jogo == "player") {
+                estado_menu = "principal";
+                opcao_selecionada = 0;
+            } else {
+                estado_menu = "dificuldade";
+            }
+            cooldown_navegacao = 10;
+        }
+    }
+}
+#endregion

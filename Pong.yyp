@@ -9,6 +9,7 @@
     {"id":{"name":"spr_ball","path":"sprites/spr_ball/spr_ball.yy",},"order":1,},
     {"id":{"name":"obj_eyes","path":"objects/obj_eyes/obj_eyes.yy",},"order":3,},
     {"id":{"name":"rm_menu","path":"rooms/rm_menu/rm_menu.yy",},"order":1,},
+    {"id":{"name":"obj_end_game_menu","path":"objects/obj_end_game_menu/obj_end_game_menu.yy",},"order":9,},
     {"id":{"name":"obj_face","path":"objects/obj_face/obj_face.yy",},"order":2,},
     {"id":{"name":"obj_pause_menu","path":"objects/obj_pause_menu/obj_pause_menu.yy",},"order":8,},
     {"id":{"name":"obj_main_menu","path":"objects/obj_main_menu/obj_main_menu.yy",},"order":7,},

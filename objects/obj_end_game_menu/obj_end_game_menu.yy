@@ -1,7 +1,7 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "obj_game_controller",
+  "name": "obj_end_game_menu",
   "spriteId": null,
   "solid": false,
   "visible": true,
