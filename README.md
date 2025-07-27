@@ -1,5 +1,3 @@
-Aqui está o README atualizado para refletir a versão 1.1.0 e todas as melhorias implementadas:
-
 # Ping Pong Game
 
 Um jogo completo de Ping Pong desenvolvido no GameMaker Studio, com múltiplas opções de jogabilidade, sistema de rodadas e configurações personalizáveis.
